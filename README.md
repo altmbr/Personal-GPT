@@ -1,6 +1,6 @@
 # My Personal GPT
 
-A simple web application that allows you to interact with OpenAI's GPT models (GPT-4o and GPT-4.5) through a clean interface.
+A simple web application that allows you to interact with OpenAI's GPT models (GPT-4o and GPT-4.5) through a clean interface. Nice way to keep using 4.5 after you run out of credits (note dated April 5 2025).
 
 ## Features
 
