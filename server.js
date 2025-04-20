@@ -50,7 +50,7 @@ app.post('/api/chat', async (req, res) => {
     if (model === 'gpt4o') {
       modelName = 'gpt-4o';
     } else if (model === 'o3') {
-      modelName = 'gpt-3.5-turbo';
+      modelName = 'o3';
     } else {
       modelName = 'gpt-4-turbo';
     }
