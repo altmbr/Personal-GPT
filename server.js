@@ -46,7 +46,14 @@ app.post('/api/chat', async (req, res) => {
     }
     
     // Use different model names based on user selection
-    const modelName = model === 'gpt4o' ? 'gpt-4o' : 'gpt-4-turbo';
+    let modelName;
+    if (model === 'gpt4o') {
+      modelName = 'gpt-4o';
+    } else if (model === 'o3') {
+      modelName = 'gpt-3.5-turbo';
+    } else {
+      modelName = 'gpt-4-turbo';
+    }
     
     console.log(`Using model: ${modelName}`);
     
