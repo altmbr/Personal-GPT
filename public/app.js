@@ -12,18 +12,17 @@ let apiKey = localStorage.getItem('openai_api_key') || '';
 
 // Set API key from localStorage if available
 if (apiKey) {
-  apiKeyInput.value = '********'; // Show asterisks instead of the actual key for security
+  apiKeyInput.value = apiKey; // Show the actual API key instead of masking it
 }
 
 // Save API key to localStorage
 saveApiKeyButton.addEventListener('click', () => {
   const newKey = apiKeyInput.value;
-  if (newKey && newKey !== '********') {
+  if (newKey) {
     localStorage.setItem('openai_api_key', newKey);
     apiKey = newKey;
-    apiKeyInput.value = '********';
     alert('API key saved successfully!');
-  } else if (newKey === '') {
+  } else {
     localStorage.removeItem('openai_api_key');
     apiKey = '';
     alert('API key removed.');
@@ -113,12 +112,12 @@ async function sendMessageToServer(userMessage) {
       })
     });
     
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Unknown error');
+      throw new Error(data.error || 'Unknown error occurred');
     }
     
-    const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
     
     // Add assistant message to conversation history
@@ -129,8 +128,20 @@ async function sendMessageToServer(userMessage) {
     addMessageToUI(assistantMessage, 'assistant');
   } catch (error) {
     removeLoadingIndicator();
-    addMessageToUI(`Error: ${error.message}. Please check your API key and try again.`, 'error-message');
-    console.error('Error:', error);
+    
+    let errorMessage = error.message;
+    
+    // Add a debug hint for users
+    if (errorMessage.includes('rate limit') || errorMessage.includes('Rate limit')) {
+      errorMessage += ' (This is normal - OpenAI limits how many requests you can make. Try again in a moment.)';
+    } else if (errorMessage.includes('insufficient_quota') || errorMessage.includes('quota')) {
+      errorMessage += ' (You need to add billing information to your OpenAI account.)';
+    } else if (errorMessage.includes('No response') || errorMessage.includes('Failed to fetch')) {
+      errorMessage += ' (Check your internet connection or try again later.)';
+    }
+    
+    addMessageToUI(`Error: ${errorMessage}`, 'error-message');
+    console.error('Error details:', error);
   }
 }
 
